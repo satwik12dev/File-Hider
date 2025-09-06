@@ -1,4 +1,4 @@
-# 📌 User Data & OTP Verification System
+# 📌 User File Hiding & OTP Verification System
 
 A **Java-based authentication and File Hider system** that manages user accounts, stores and retrieves user files, Hide files, UnHide Files and implements **OTP (One-Time Password) authentication** for secure login and verification.  
 The project follows the **DAO (Data Access Object) pattern** for clean and maintainable database interactions.
