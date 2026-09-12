@@ -30,10 +30,10 @@ export default function ThreeParticleCanvas() {
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
     const material = new THREE.PointsMaterial({
-      color: 0x818cf8,
-      size: 1.5,
+      color: 0xffffff,
+      size: 1.4,
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.45,
       blending: THREE.AdditiveBlending
     });
 

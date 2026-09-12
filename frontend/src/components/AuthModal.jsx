@@ -105,7 +105,8 @@ export default function AuthModal({
       onShowToast(`Welcome back, ${userData.name || 'User'}!`, 'success');
       onAuthSuccess({
         email: userData.email || email,
-        name: userData.name || name || email.split('@')[0]
+        name: userData.name || name || email.split('@')[0],
+        token: userData.token || null
       });
       onClose();
     } catch (err) {

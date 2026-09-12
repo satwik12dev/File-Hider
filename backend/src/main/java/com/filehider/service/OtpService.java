@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -20,7 +22,14 @@ public class OtpService {
 
     private final Map<String, String> otpStore = new ConcurrentHashMap<>();
     private final Map<String, Long> otpTimestamps = new ConcurrentHashMap<>();
+    private final Map<String, Integer> otpAttempts = new ConcurrentHashMap<>();
+    private final Map<String, Long> lastDispatchTimes = new ConcurrentHashMap<>();
+
     private static final long OTP_VALIDITY_DURATION_MS = 10 * 60 * 1000; // 10 minutes
+    private static final long RATE_LIMIT_COOLDOWN_MS = 60 * 1000; // 60 seconds cooldown
+    private static final int MAX_FAILED_ATTEMPTS = 5;
+
+    private final SecureRandom secureRandom = new SecureRandom();
 
     @Autowired(required = false)
     private JavaMailSender mailSender;
@@ -28,12 +37,37 @@ public class OtpService {
     @Value("${spring.mail.username:satwiksaxena41@gmail.com}")
     private String mailFrom;
 
+    /**
+     * Checks if the email is in the rate-limit cooldown window.
+     */
+    public boolean isRateLimited(String email) {
+        Long lastTime = lastDispatchTimes.get(email);
+        return lastTime != null && (System.currentTimeMillis() - lastTime) < RATE_LIMIT_COOLDOWN_MS;
+    }
+
+    /**
+     * Generates a cryptographically secure 4-digit OTP using SecureRandom.
+     */
     public String generateOtp(String email) {
-        Random random = new Random();
-        String otp = String.format("%04d", random.nextInt(10000));
+        int code = secureRandom.nextInt(10000);
+        String otp = String.format("%04d", code);
+
         otpStore.put(email, otp);
         otpTimestamps.put(email, System.currentTimeMillis());
+        otpAttempts.put(email, 0);
+        lastDispatchTimes.put(email, System.currentTimeMillis());
+
+        log.info("Generated cryptographically secure OTP for {} -> [{}]", email, otp);
         return otp;
+    }
+
+    /**
+     * Asynchronously sends the OTP email via the configured thread pool.
+     */
+    @Async("mailTaskExecutor")
+    public CompletableFuture<Boolean> sendOtpEmailAsync(String email, String otp) {
+        boolean sent = sendOtpEmail(email, otp);
+        return CompletableFuture.completedFuture(sent);
     }
 
     public boolean sendOtpEmail(String email, String otp) {
@@ -191,6 +225,7 @@ public class OtpService {
             return true;
         } catch (Exception e) {
             log.error("Failed to send OTP email to {}: {}", email, e.getMessage(), e);
+            log.warn("DEVELOPMENT FALLBACK: Generated OTP for {} is: [{}]", email, otp);
             return false;
         }
     }
@@ -209,12 +244,26 @@ public class OtpService {
         if (System.currentTimeMillis() - timestamp > OTP_VALIDITY_DURATION_MS) {
             otpStore.remove(email);
             otpTimestamps.remove(email);
+            otpAttempts.remove(email);
             return false;
         }
 
-        if (expectedOtp.equals(otp)) {
+        // Track and throttle attempts to prevent brute force
+        int attempts = otpAttempts.getOrDefault(email, 0) + 1;
+        otpAttempts.put(email, attempts);
+
+        if (attempts > MAX_FAILED_ATTEMPTS) {
+            log.warn("Exceeded maximum OTP validation attempts for {}. Invalidating code.", email);
             otpStore.remove(email);
             otpTimestamps.remove(email);
+            otpAttempts.remove(email);
+            return false;
+        }
+
+        if (expectedOtp.equals(otp.trim())) {
+            otpStore.remove(email);
+            otpTimestamps.remove(email);
+            otpAttempts.remove(email);
             return true;
         }
 

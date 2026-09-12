@@ -102,17 +102,18 @@ export default function Dashboard({
 
   const handleHideByPath = async (e) => {
     e.preventDefault();
-    if (!localPath.trim()) {
+    const cleanPath = localPath.trim().replace(/^["']|["']$/g, '');
+    if (!cleanPath) {
       onShowToast('Please enter a local file path', 'error');
       return;
     }
 
     setHideLoading(true);
     try {
-      const res = await hideByPathApi(localPath.trim(), user.email);
-      onShowToast(res.message || 'File safely encrypted & wiped from PC', 'success');
+      const res = await hideByPathApi(cleanPath, user?.email);
       setLocalPath('');
       await onRefreshFiles();
+      onShowToast(res.message || 'File safely encrypted & wiped from PC', 'success');
     } catch (err) {
       onShowToast(err.message, 'error');
     } finally {
@@ -212,6 +213,20 @@ export default function Dashboard({
             </button>
           </div>
         </div>
+        {!user?.token && (
+          <div style={{
+            margin: '0 0 16px 0',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            background: 'rgba(234, 179, 8, 0.08)',
+            border: '1px solid rgba(234, 179, 8, 0.25)',
+            color: '#facc15',
+            fontSize: '12px',
+            lineHeight: '1.5'
+          }}>
+            ⚠️ <strong>Offline Enclave Mode:</strong> You are currently in client-side preview mode. Files are stored in browser memory, but <strong>physical file wiping from your PC drive requires logging in to the active Spring Boot backend</strong>. Please click <strong>Lock</strong> (top-right) and log in to enable real disk wiping.
+          </div>
+        )}
 
         {activeTab === 'path' ? (
           <form onSubmit={handleHideByPath}>
@@ -365,7 +380,10 @@ export default function Dashboard({
             <Button
               variant="outline"
               size="sm"
-              onClick={onRefreshFiles}
+              onClick={async () => {
+                await onRefreshFiles();
+                onShowToast?.('Vault inventory synchronized', 'info');
+              }}
               icon={<RefreshCw style={{ width: '13px', height: '13px' }} />}
             >
               Sync

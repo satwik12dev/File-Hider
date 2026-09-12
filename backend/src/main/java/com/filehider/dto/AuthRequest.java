@@ -1,8 +1,19 @@
 package com.filehider.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
 public class AuthRequest {
+
+    @NotBlank(message = "Email address is required")
+    @Email(message = "Must provide a valid email format")
     private String email;
+
     private String name;
+
+    @NotBlank(message = "OTP security code is required")
+    @Pattern(regexp = "^\\d{4,6}$", message = "OTP must be 4 to 6 numeric digits")
     private String otp;
 
     public AuthRequest() {

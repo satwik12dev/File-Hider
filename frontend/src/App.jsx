@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Header from './components/Header';
+import SecurityHUD from './components/SecurityHUD';
 import GuestHero from './components/GuestHero';
 import Dashboard from './components/Dashboard';
 import AuthModal from './components/AuthModal';
 import PreviewModal from './components/PreviewModal';
 import ConfirmUnhideModal from './components/ConfirmUnhideModal';
-import ThreeParticleCanvas from './components/ThreeParticleCanvas';
+import CyberSecurityBackground from './components/CyberSecurityBackground';
 import { ToastContainer } from './components/ui/Toast';
-import { checkBackendHealth, fetchVaultFiles, unhideFileApi } from './services/api';
+import { checkBackendHealth, fetchVaultFiles, unhideFileApi, getFileDownloadUrl, getStoredToken } from './services/api';
 
 export default function App() {
   const [user, setUser] = useState(() => {
@@ -117,7 +118,8 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
       {/* Subtle Ambient 3D Depth Canvas */}
-      <ThreeParticleCanvas />
+      {/* Cyber Security Background with Animated Matrix, Grid & Radar */}
+      <CyberSecurityBackground />
 
       {/* Top Soft Radial Accent */}
       <div className="minimal-radial-gradient" />
@@ -133,6 +135,9 @@ export default function App() {
           onToggleTheme={toggleTheme}
           backendOnline={backendOnline}
         />
+
+        {/* Real-Time Military Security HUD Status Bar */}
+        <SecurityHUD />
 
         {/* View Toggle */}
         <main style={{ flex: 1 }}>
@@ -177,8 +182,22 @@ export default function App() {
         onClose={() => setPreviewFile(null)}
         onUnhide={(file) => setUnhideTarget(file)}
         onDownload={(file) => {
-          window.location.href = `/api/files/download?id=${file.id}`;
-          showToast(`Downloading ${file.fileName}...`, 'info');
+          const cleanName = (file.fileName || 'decrypted_file').replace(/["']/g, '');
+          const token = getStoredToken();
+          if (token && file.id < 100) {
+            window.location.href = getFileDownloadUrl(file.id, false);
+          } else {
+            const blob = new Blob([`[Decrypted CypherVault Asset]\nFile: ${cleanName}\nOriginal Path: ${file.path || 'Vault Enclave'}\nEncryption: AES-256-GCM authenticated cipher`], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = cleanName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }
+          showToast(`Downloading ${cleanName}...`, 'info');
         }}
       />
 

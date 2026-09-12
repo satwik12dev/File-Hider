@@ -30,50 +30,50 @@ export default function ThreeVaultScene({ onTriggerAction }) {
     const vaultGroup = new THREE.Group();
     scene.add(vaultGroup);
 
-    // 1. Sleek Outer Floating Vault Cube (Beveled/Rounded look via BoxGeometry + Wireframe)
+    // 1. Sleek Outer Floating Vault Cube (Deep obsidian black with clearcoat reflection)
     const boxGeo = new THREE.BoxGeometry(2.4, 2.4, 2.4);
     const boxMat = new THREE.MeshPhysicalMaterial({
-      color: 0x18181f,
-      metalness: 0.85,
-      roughness: 0.25,
-      clearcoat: 0.6,
+      color: 0x0a0a0c,
+      metalness: 0.9,
+      roughness: 0.2,
+      clearcoat: 0.8,
       clearcoatRoughness: 0.1,
-      reflectivity: 0.9,
+      reflectivity: 1.0,
       wireframe: false
     });
     const mainBox = new THREE.Mesh(boxGeo, boxMat);
     vaultGroup.add(mainBox);
 
-    // Subtle edge highlight for clean luxury definition
+    // Subtle edge highlight for clean luxury definition (crisp white hairline edges)
     const edgeGeo = new THREE.EdgesGeometry(boxGeo);
     const edgeMat = new THREE.LineBasicMaterial({
-      color: 0x6366f1,
+      color: 0xffffff,
       transparent: true,
-      opacity: 0.4
+      opacity: 0.45
     });
     const boxEdges = new THREE.LineSegments(edgeGeo, edgeMat);
     vaultGroup.add(boxEdges);
 
-    // 2. Central Metallic Vault Dial / Safe Rotor
+    // 2. Central Metallic Vault Dial / Safe Rotor (Titanium chrome)
     const dialGeo = new THREE.CylinderGeometry(0.75, 0.75, 0.25, 32);
     const dialMat = new THREE.MeshStandardMaterial({
-      color: 0x272730,
-      metalness: 0.9,
-      roughness: 0.2
+      color: 0x1c1c20,
+      metalness: 0.95,
+      roughness: 0.15
     });
     const dial = new THREE.Mesh(dialGeo, dialMat);
     dial.rotation.x = Math.PI / 2;
     dial.position.z = 1.2;
     vaultGroup.add(dial);
 
-    // Inner dial ring
+    // Inner dial ring (Luminous platinum white)
     const innerRingGeo = new THREE.TorusGeometry(0.55, 0.04, 16, 48);
     const ringMat = new THREE.MeshStandardMaterial({
-      color: 0x6366f1,
-      emissive: 0x4f46e5,
-      emissiveIntensity: 0.4,
-      metalness: 0.8,
-      roughness: 0.2
+      color: 0xffffff,
+      emissive: 0xffffff,
+      emissiveIntensity: 0.5,
+      metalness: 0.9,
+      roughness: 0.1
     });
     const innerRing = new THREE.Mesh(innerRingGeo, ringMat);
     innerRing.position.z = 1.34;
@@ -82,9 +82,9 @@ export default function ThreeVaultScene({ onTriggerAction }) {
     // Center lock emblem/point
     const corePointGeo = new THREE.SphereGeometry(0.18, 16, 16);
     const corePointMat = new THREE.MeshStandardMaterial({
-      color: 0x10b981,
-      emissive: 0x10b981,
-      emissiveIntensity: 0.5,
+      color: 0xffffff,
+      emissive: 0xffffff,
+      emissiveIntensity: 0.85,
       roughness: 0.1
     });
     const corePoint = new THREE.Mesh(corePointGeo, corePointMat);
@@ -94,7 +94,7 @@ export default function ThreeVaultScene({ onTriggerAction }) {
     // 3. Subtle floating orbital orbit ring
     const orbitRingGeo = new THREE.TorusGeometry(2.1, 0.02, 16, 64);
     const orbitMat = new THREE.MeshBasicMaterial({
-      color: 0x818cf8,
+      color: 0xffffff,
       transparent: true,
       opacity: 0.25
     });
@@ -102,19 +102,19 @@ export default function ThreeVaultScene({ onTriggerAction }) {
     orbitRing.rotation.x = Math.PI / 3;
     vaultGroup.add(orbitRing);
 
-    // Studio Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    // Studio Lighting (Crisp High-Luminance White & Soft Rim)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
     keyLight.position.set(5, 6, 6);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0x6366f1, 3.0);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 2.4);
     rimLight.position.set(-6, -4, -3);
     scene.add(rimLight);
 
-    const fillLight = new THREE.PointLight(0x10b981, 1.2, 10);
+    const fillLight = new THREE.PointLight(0xffffff, 1.2, 10);
     fillLight.position.set(0, 2, 3);
     scene.add(fillLight);
 

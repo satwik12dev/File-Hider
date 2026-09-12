@@ -1,6 +1,7 @@
-import React from 'react';
-import { Lock, Sun, Moon, LogOut, ShieldCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { Lock, Sun, Moon, LogOut, Volume2, VolumeX, ShieldCheck } from 'lucide-react';
 import { Button } from './ui/Button';
+import { cyberAudio } from '../services/cyberAudio';
 
 export default function Header({
   user,
@@ -10,6 +11,13 @@ export default function Header({
   onToggleTheme,
   backendOnline
 }) {
+  const [soundEnabled, setSoundEnabled] = useState(false);
+
+  const toggleSound = () => {
+    const isNowOn = cyberAudio.toggleSound();
+    setSoundEnabled(isNowOn);
+  };
+
   return (
     <header className="minimal-nav">
       {/* Brand */}
@@ -19,7 +27,7 @@ export default function Header({
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className="brand-title">CypherVault</span>
-          <span className="brand-tag">v2.4</span>
+          <span className="brand-tag">CLASSIFIED // v2.4</span>
         </div>
       </div>
 
@@ -33,6 +41,31 @@ export default function Header({
           <span className="status-dot-pulse" />
           <span>{backendOnline ? 'API Active' : 'Offline'}</span>
         </div>
+
+        {/* Cyber Audio Toggle */}
+        <button
+          type="button"
+          onClick={toggleSound}
+          style={{
+            background: 'var(--bg-subtle)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            padding: '7px 10px',
+            cursor: 'pointer',
+            color: soundEnabled ? '#ffffff' : 'var(--text-muted)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s ease'
+          }}
+          title={soundEnabled ? 'Cyber Audio: Active (Click to Mute)' : 'Enable Cyber Synthesizer SFX'}
+        >
+          {soundEnabled ? (
+            <Volume2 style={{ width: '15px', height: '15px', color: '#ffffff' }} />
+          ) : (
+            <VolumeX style={{ width: '15px', height: '15px' }} />
+          )}
+        </button>
 
         {/* Theme Toggle */}
         <button
@@ -52,7 +85,7 @@ export default function Header({
           title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
         >
           {theme === 'dark' ? (
-            <Sun style={{ width: '15px', height: '15px', color: '#facc15' }} />
+            <Sun style={{ width: '15px', height: '15px', color: '#ffffff' }} />
           ) : (
             <Moon style={{ width: '15px', height: '15px' }} />
           )}

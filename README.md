@@ -1,22 +1,25 @@
 <div align="center">
 
 # 🛡️ CYPHERVAULT
-### *Military-Grade Zero-Knowledge File Matrix & Anti-Forensic Storage Engine*
+
+### *Enterprise Military-Grade Zero-Knowledge File Isolation, Encapsulation & Anti-Forensic Storage Engine*
 
 [![Spring Boot Version](https://img.shields.io/badge/Spring%20Boot-3.3.0-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
-[![Java Version](https://img.shields.io/badge/Java-21%20%2F%2025-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
+[![Java Version](https://img.shields.io/badge/Java-21%20LTS%20%2F%2025-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
+[![React Version](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6.x%20%2F%208.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Three.js](https://img.shields.io/badge/Three.js-WebGL-black?style=for-the-badge&logo=threedotjs&logoColor=white)](https://threejs.org/)
 [![MySQL 8+](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
-[![Theme Engine](https://img.shields.io/badge/Theme-Light%20%26%20Dark-22c55e?style=for-the-badge&logo=shadcnui&logoColor=white)](#-theme-engine)
+[![Theme Engine](https://img.shields.io/badge/Theme-Light%20%26%20Dark-22c55e?style=for-the-badge&logo=shadcnui&logoColor=white)](#-theme-engine-matrix)
 [![License](https://img.shields.io/badge/License-MIT-8A2BE2?style=for-the-badge)](LICENSE)
 
 <br/>
 
 <p align="center">
-  <b>CypherVault</b> is an enterprise-grade cryptographic file encapsulation and zero-trace security platform designed to isolate, protect, and anti-forensically sequester sensitive data. By converting target files into encapsulated relational binary payloads and cryptographically scrubbing disk sectors, CypherVault guarantees zero residual host footprint until OTP-authenticated restoration.
+  <b>CypherVault</b> is a production-grade cryptographic file encapsulation and zero-trace security platform designed to isolate, protect, and anti-forensically sequester sensitive host data. By transforming physical files into <b>AES-256-GCM encrypted binary payloads</b>, persisting them inside an isolated relational database enclave (<code>LONGBLOB</code>), and <b>forensically scrubbing host disk sectors with low-level zero-overwrites</b>, CypherVault guarantees a zero residual host footprint until OTP/JWT-authenticated restoration.
 </p>
 
-[Explore Features](#-core-capabilities) • [System Architecture](#-system-architecture) • [Getting Started](#-getting-started) • [REST API Reference](#-rest-api-specification) • [Security Model](#-threat-model--security-mechanisms)
+[System Architecture](#-system-architecture--blueprint) • [Backend Instructions](#-backend-engineering--instructions) • [Frontend Instructions](#-frontend-engineering--instructions) • [Quick Start (3 Mins)](#-full-stack-quickstart-guide) • [REST API Reference](#-rest-api-specification) • [Database Schema](#-database-architecture--schema)
 
 ---
 
@@ -25,395 +28,664 @@
 ## 📑 Table of Contents
 
 - [🌟 Executive Summary](#-executive-summary)
-- [✨ Core Capabilities](#-core-capabilities)
-- [⚖️ Architecture Matrix (CypherVault vs. Traditional File Hiding)](#️-architecture-matrix)
-- [🏗️ System Architecture](#️-system-architecture)
-  - [High-Level Dataflow](#high-level-dataflow)
-  - [Encapsulation & Disk Wipe Sequence](#encapsulation--disk-wipe-sequence)
-- [🌓 Theme Engine (Light & Dark Matrix)](#-theme-engine)
-- [💻 Technology Stack](#-technology-stack)
-- [📁 Project Layout](#-project-layout)
-- [🚀 Getting Started](#-getting-started)
-  - [System Requirements](#system-requirements)
-  - [1. Database Configuration](#1-database-configuration)
-  - [2. Environment & Application Setup](#2-environment--application-setup)
-  - [3. Starting the Backend Core](#3-starting-the-backend-core)
-  - [4. Starting the Frontend HUD](#4-starting-the-frontend-hud)
+- [⚖️ Architecture Matrix (CypherVault vs. Traditional Hiding)](#️-architecture-matrix)
+- [🏗️ System Architecture & Blueprint](#️-system-architecture--blueprint)
+  - [High-Level Tier Architecture](#high-level-tier-architecture)
+  - [Concealment & Anti-Forensic Disk Wipe Pipeline](#concealment--anti-forensic-disk-wipe-pipeline)
+  - [Reversible Decryption & Restoration Pipeline](#reversible-decryption--restoration-pipeline)
+  - [Zero-Knowledge MFA OTP & JWT Authentication Flow](#zero-knowledge-mfa-otp--jwt-authentication-flow)
+- [🗄️ Database Architecture & Schema](#️-database-architecture--schema)
+  - [Entity Relationship Diagram (ERD)](#entity-relationship-diagram-erd)
+  - [Table Specifications (`user` & `data`)](#table-specifications)
+- [⚙️ Backend Engineering & Instructions](#️-backend-engineering--instructions)
+  - [Backend Tech Stack & Design Patterns](#backend-tech-stack--design-patterns)
+  - [Backend Prerequisites](#backend-prerequisites)
+  - [Backend Configuration (`application.properties`)](#backend-configuration)
+  - [Step-by-Step Backend Setup & Execution](#step-by-step-backend-setup--execution)
+  - [Actuator & Swagger OpenAPI Documentation](#actuator--swagger-openapi-documentation)
+- [🖥️ Frontend Engineering & Instructions](#️-frontend-engineering--instructions)
+  - [Frontend Tech Stack & Design System](#frontend-tech-stack--design-system)
+  - [Component Tree & Architecture](#component-tree--architecture)
+  - [Offline Enclave Demo Mode](#offline-enclave-demo-mode)
+  - [Frontend Prerequisites](#frontend-prerequisites)
+  - [Step-by-Step Frontend Setup & Execution](#step-by-step-frontend-setup--execution)
+  - [Vite Reverse Proxy Routing](#vite-reverse-proxy-routing)
+- [🌓 Theme Engine Matrix](#-theme-engine-matrix)
+- [⚡ Full-Stack Quickstart Guide](#-full-stack-quickstart-guide)
 - [🔌 REST API Specification](#-rest-api-specification)
-  - [Authentication Service (`/api/auth`)](#1-authentication-service-apiauth)
-  - [Vault File Service (`/api/files`)](#2-vault-file-service-apifiles)
-  - [Core Health Monitor (`/api/health`)](#3-core-health-monitor-apihealth)
-- [🔒 Threat Model & Security Mechanisms](#-threat-model--security-mechanisms)
-- [⚙️ Configuration Parameters](#️-configuration-parameters)
+  - [1. Core Health Monitor](#1-core-health-monitor)
+  - [2. Authentication Service](#2-authentication-service)
+  - [3. Vault File Service](#3-vault-file-service)
+- [🔒 Security & Threat Model](#-security--threat-model)
 - [🛠️ Troubleshooting & Diagnostics](#️-troubleshooting--diagnostics)
-- [🗺️ Future Roadmap](#️-future-roadmap)
-- [🤝 Contributing & Code of Conduct](#-contributing--code-of-conduct)
+- [🗺️ Future Engineering Roadmap](#️-future-engineering-roadmap)
 - [📄 License](#-license)
 
 ---
 
 ## 🌟 Executive Summary
 
-Traditional operating system file hiding (e.g., hidden folder attributes or dotfiles) leaves metadata, filesystem entries, and unencrypted sectors intact on physical drives—rendering files vulnerable to standard forensic scrapers.
+Standard operating system file hiding (such as toggling Windows `attrib +h` or prefixing UNIX files with `.`) leaves Master File Table (MFT) records, physical directory indexes, and raw disk blocks exposed to routine recovery software, digital forensic examiners, and infostealer malware.
 
-**CypherVault** solves this by establishing a zero-trace isolation lifecycle:
-1. **Ingests** target local or uploaded payloads directly into memory buffers.
-2. **Encapsulates** raw binary bytes into dedicated, access-controlled MySQL database stores (`LONGBLOB`).
-3. **Forensically Scrubs** host drive sectors with atomic file wipes to prevent undelete recovery.
-4. **Guards Retrieval** behind a time-bounded One-Time Password (OTP) verification perimeter dispatched asynchronously via secure SMTP channels.
-5. **Reversibly Restores** binaries to their exact origin or downloads them securely upon verified request.
+**CypherVault** introduces an **Anti-Forensic Binary Isolation Lifecycle**:
 
----
-
-## ✨ Core Capabilities
-
-- **🔐 Zero-Knowledge MFA OTP Authentication**
-  - Instant dispatch of cryptographically random 6-digit verification codes.
-  - Ephemeral in-memory OTP cache with strict 5-minute time-to-live (TTL) and auto-invalidation upon consumption.
-
-- **🗂️ Dual Ingestion Pipelines**
-  - **Direct Local Path Encapsulation**: Target absolute file paths (e.g., `C:\Sensitive\Financials.xlsx`); the engine serializes the binary and wipes the source file from disk immediately.
-  - **Browser Drag & Drop / Staging Matrix**: Batch stage documents, binaries, and images through the client UI directly into secure database storage.
-
-- **⚡ Bi-Directional Reversible Restoration**
-  - Restore files seamlessly back to their exact original filesystem directory.
-  - Export payloads on-demand via direct streaming download response pipelines.
-
-- **🌓 Dual-Engine Visual Matrix (Light & Dark Themes)**
-  - Seamless toggle between a crisp **White Theme** (Shadcn-inspired slate palette) and a stealth **Obsidian Dark Matrix** with luminous green HUD accents.
-  - Automatic synchronization with operating system `prefers-color-scheme` and `localStorage` persistence.
-
-- **📊 Real-Time Telemetry & Metric Matrix**
-  - Live computation of total encapsulated assets, storage footprint reclaimed, and categorical distribution (Documents, Media, Code/Data, Archives).
-
-- **🩺 Real-Time Engine Heartbeat**
-  - Continuous non-blocking polling of backend health status (`/api/health`) with HUD pulse indicators.
+1. **Memory Ingestion**: Targets local absolute file paths or browser-dragged payloads directly into secure RAM buffers without writing unencrypted swap artifacts.
+2. **Authenticated Cryptography**: Encrypts file bytes on the fly with **AES-256-GCM** using unique initialization vectors (IVs) and SHA-256 integrity checksums.
+3. **Database Relational Enclave**: Stores the encrypted payload safely within MySQL as an unlinked `LONGBLOB`.
+4. **Forensic Disk Sector Sanitization**: Unlocks attributes, executes low-level multi-buffer zero-overwrites via `RandomAccessFile`, flushes file descriptor caches, and unlinks the file from host drives.
+5. **Zero-Knowledge MFA Authentication**: Protects access through rate-limited, time-bounded One-Time Passwords (OTPs) dispatched via TLS/SSL SMTP with stateless JWT session enforcement.
+6. **Reversible Restoration**: Accurately decrypts and writes binaries back to their original disk sectors or streams them directly to client browsers.
 
 ---
 
 ## ⚖️ Architecture Matrix
 
-| Metric / Dimension | Traditional OS File Hiding | Encryption Archives (Zip/RAR) | CypherVault Engine |
+| Metric / Dimension | Traditional OS Hiding | Encryption Archive (ZIP/RAR) | CypherVault Engine |
 | :--- | :--- | :--- | :--- |
-| **Filesystem Presence** | File & path visible to tools | File exists on disk as archive | **Zero host disk footprint** |
-| **Forensic Traceability** | File table entry remains | Archive header remains | **Sanitized & unlinked** |
-| **Access Verification** | None / OS login only | Static password only | **Dynamic Time-Bounded Email OTP** |
-| **Restoration Capability** | Toggle attribute flag | Extract entire archive | **Precise atomic unhide to source path** |
-| **Centralized Indexing** | Local filesystem search | None | **Relational index + Telemetry HUD** |
-| **Platform Portability** | OS specific | Tool specific | **Full-stack cross-platform (Web + REST API)** |
+| **Filesystem Presence** | File and path fully visible to utilities | Archive file remains visible on disk | **Zero physical disk footprint** |
+| **Forensic Traceability** | File table & blocks recoverable | Archive headers reveal file metadata | **Disk sectors zero-scrubbed & unlinked** |
+| **Encryption Standard** | None (OS attribute flag only) | Optional symmetric password | **AES-256-GCM Authenticated Encryption** |
+| **Access Verification** | Windows/Linux OS login credentials | Static, brute-forceable password | **Dynamic 6-Digit Email OTP + Bearer JWT** |
+| **Integrity Assurance** | None | Basic CRC32 | **SHA-256 Cryptographic Checksum** |
+| **Restoration Capability** | Toggle attribute flag | Extract entire archive manually | **Atomic unhide to source path or stream** |
+| **UI & Telemetry** | OS File Explorer | Archiver GUI | **3D WebGL Holographic HUD (React 19)** |
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ System Architecture & Blueprint
 
-### High-Level Dataflow
+### High-Level Tier Architecture
 
 ```mermaid
 flowchart TB
     subgraph ClientLayer ["Client Interface Tier (Port 3000)"]
-        UI["🖥️ Cyberpunk HUD / Dashboard<br/>(HTML5 / CSS3 / Vanilla JS)"]
-        Theme["🌓 Theme Matrix Controller<br/>(Light / Dark Mode State)"]
-        AuthUI["🔑 OTP Verification Modal"]
-        UI --- Theme
-        UI --- AuthUI
+        UI["🖥️ Tactical Web HUD<br/>(React 19 / Vite / Tailwind Tokens)"]
+        ThreeCanvas["🧊 3D WebGL Holographic Vault<br/>(Three.js / React Three Fiber)"]
+        ThemeEngine["🌓 Theme Matrix Controller<br/>(Light Slate / Obsidian Dark)"]
+        AuthModal["🔑 OTP & JWT Security Enclave<br/>(PIN Auto-Advance & Cooldown)"]
+        PreviewEng["👁️ In-Memory Previewer<br/>(PDF, Images, Code, Audio)"]
+        OfflineFallback["📦 Offline Enclave Fallback<br/>(LocalStorage Mock Enclave)"]
+
+        UI --- ThreeCanvas
+        UI --- ThemeEngine
+        UI --- AuthModal
+        UI --- PreviewEng
+        UI -.-> OfflineFallback
     end
 
-    subgraph APILayer ["Backend Application Core (Port 8080)"]
-        Security["🛡️ Spring Security Filter Chain"]
-        AuthCtrl["AuthController<br/>(/api/auth)"]
-        VaultCtrl["VaultFileController<br/>(/api/files)"]
-        HealthCtrl["HealthController<br/>(/api/health)"]
+    subgraph ReverseProxy ["Reverse Proxy & Network Gateway"]
+        ViteProxy["⚡ Vite HMR Dev Proxy<br/>(:3000/api ➔ :8080/api)"]
+    end
+
+    subgraph BackendLayer ["Backend Core Microservice (Port 8080)"]
+        SecurityFilter["🛡️ Spring Security Filter Chain<br/>(Stateless JWT + CORS Configuration)"]
         
-        OtpSvc["OtpService<br/>(Token Cache + TTL)"]
-        UserSvc["UserService<br/>(Account Registry)"]
-        VaultSvc["VaultService<br/>(Wipe & Restoration Engine)"]
+        subgraph Controllers ["REST API Controllers"]
+            HealthCtrl["HealthController<br/>/api/health"]
+            AuthCtrl["AuthController<br/>/api/auth/**"]
+            VaultCtrl["VaultFileController<br/>/api/files/**"]
+        end
+
+        subgraph CoreServices ["Core Engineering Services"]
+            JwtSvc["JwtService<br/>(HMAC-SHA256 Token Engine)"]
+            OtpSvc["OtpService<br/>(Rate Limiter + Ephemeral Token Bucket)"]
+            UserSvc["UserService<br/>(Account Registry & JPA Bridge)"]
+            VaultSvc["VaultService<br/>(AES Encryptor + Disk Sanitizer)"]
+            CryptoEng["AesEncryptionService<br/>(AES-256-GCM + IV Generator)"]
+        end
+
+        SecurityFilter --> Controllers
+        AuthCtrl --> JwtSvc & OtpSvc & UserSvc
+        VaultCtrl --> VaultSvc
+        VaultSvc --> CryptoEng
     end
 
-    subgraph ExternalServices ["Perimeter Services & Storage"]
-        MySQL[("🗄️ MySQL 8.0+ Database<br/>`FileHider` Schema")]
-        SMTP["📧 SMTP Relay Service<br/>(Gmail STARTTLS :587)"]
-        HostFS["💾 Host Filesystem<br/>(Local Storage Drives)"]
+    subgraph DataPersistence ["Persistence & External Infrastructure"]
+        MySQL[("🗄️ MySQL Database (Port 3306)<br/>`FileHider` Schema: `user` & `data`")]
+        SMTP["📧 Mail Gateway<br/>(Gmail SMTP SSL :465 / STARTTLS :587)"]
+        HostFS["💾 Workstation Disk Storage<br/>(NTFS / ext4 Local File System)"]
     end
 
-    UI <==>|"REST API / JSON / Multipart"| Security
-    Security --> AuthCtrl & VaultCtrl & HealthCtrl
-    
-    AuthCtrl --> OtpSvc & UserSvc
-    VaultCtrl --> VaultSvc
-    
-    OtpSvc -->|"Asynchronous Dispatch"| SMTP
-    UserSvc <-->|"JPA / Hibernate"| MySQL
-    VaultSvc <-->|"BLOB Persistence"| MySQL
-    VaultSvc <-->|"Atomic Wipe / Restore"| HostFS
+    ClientLayer ==>|"HTTP / REST / JSON / Multipart"| ViteProxy
+    ViteProxy ==>|"Proxied TCP Traffic"| SecurityFilter
+    OtpSvc -->|"Async Mail Task Pool"| SMTP
+    UserSvc <-->|"HikariCP Connection Pool"| MySQL
+    VaultSvc <-->|"LONGBLOB Persistence"| MySQL
+    VaultSvc <-->|"Zero-Wipe / Atomic Restore"| HostFS
 ```
 
 ---
 
-### Encapsulation & Disk Wipe Sequence
+### Concealment & Anti-Forensic Disk Wipe Pipeline
+
+The following sequence illustrates the lifecycle of hiding a local filesystem asset:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Operator / Browser
-    participant API as Vault Controller (:8080)
-    participant Core as Vault Service Engine
-    participant DB as MySQL Database
-    participant Disk as Host Filesystem
+    actor Operator as Operator / Web HUD
+    participant Proxy as Vite Reverse Proxy (:3000)
+    participant API as VaultFileController (:8080)
+    participant Core as VaultService
+    participant Crypto as AesEncryptionService
+    participant DB as MySQL (`data` table)
+    participant Disk as Local Host Filesystem
 
-    User->>API: POST /api/files/hide-path {path, email}
+    Operator->>Proxy: POST /api/files/hide-path {path, email} [Bearer JWT]
+    Proxy->>API: Forward request with Authorization Header
+    API->>API: Verify JWT Principal & Match with Target Email
     API->>Core: hideLocalFile(path, email)
-    Core->>Disk: Resolve file & read raw bytes into RAM buffer
-    Disk-->>Core: Raw binary byte[] array
-    Core->>DB: INSERT INTO vault_files (file_name, path, bin_data, email)
-    DB-->>Core: Record committed (ID #)
-    Core->>Disk: Reset permissions & wipe file from disk sector
-    Disk-->>Core: File unlinked and verified deleted
+    Core->>Disk: Check path safety (verify not in C:\Windows or system roots)
+    Core->>Disk: Read file raw bytes into RAM buffer
+    Disk-->>Core: Raw byte[] payload
+    Core->>Crypto: encrypt(rawBytes)
+    Crypto-->>Core: {cipherBytes, 12-byte IV, SHA-256 Checksum}
+    Core->>DB: INSERT INTO data (nameoffile, path, email, bin_data, iv, checksum, file_size, content_type)
+    DB-->>Core: Database Transaction Committed (Record ID #)
+    Core->>Disk: wipeFileFromDisk(path)
+    Note over Core,Disk: 1. cmd /c attrib -r -s -h (clear file protection locks)<br/>2. Open RandomAccessFile in 'rws' mode<br/>3. Multi-pass Zero-buffer overwrite<br/>4. Sync FileDescriptor caches to hardware<br/>5. Files.deleteIfExists()
+    Disk-->>Core: File unlinked from filesystem table
     Core-->>API: FileResponseDto (Metadata)
-    API-->>User: 200 OK (Encapsulated & local trace sanitized)
+    API-->>Operator: 200 OK {"success": true, "message": "Encrypted & sanitized"}
 ```
 
 ---
 
-## 🌓 Theme Engine
+### Reversible Decryption & Restoration Pipeline
 
-CypherVault features a built-in **Dual-Mode Matrix Theme Engine** tailored for both high-clarity daylight operations and low-light tactical environments:
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Operator as Operator / Web HUD
+    participant API as VaultFileController (:8080)
+    participant Core as VaultService
+    participant Crypto as AesEncryptionService
+    participant DB as MySQL Database
+    participant Disk as Local Host Filesystem
 
-<div align="center">
-
-| Theme Mode | Design Philosophy | Primary Background | Card Surface | Accent Highlight |
-| :--- | :--- | :--- | :--- | :--- |
-| **Light Mode** | Clean modern Shadcn palette | `#f8fafc` (Slate 50) | `#ffffff` (Pure White) | `#16a34a` (Emerald 600) |
-| **Dark Mode** | Obsidian Tactical HUD | `#090d16` (Pitch Obsidian) | `#0f172a` (Slate 900) | `#22c55e` (Cyber Green 500) |
-
-</div>
-
-- **Instant Switching**: Click the theme toggle button in the navigation header to flip between Light and Dark palettes.
-- **Zero Flash of Unstyled Content (FOUC)**: Theme initialization runs synchronously on `DOMContentLoaded`.
-- **System Preference Reactive**: Synchronizes with your device's native theme mode changes automatically.
-
----
-
-## 💻 Technology Stack
-
-### Backend Core
-- **Framework**: [Spring Boot 3.3.0](https://spring.io/projects/spring-boot)
-- **Language**: Java 21 LTS / 25
-- **Security & Authorization**: Spring Security, BCrypt, Stateless Request Handling, CORS Filters
-- **Persistence & ORM**: Spring Data JPA, Hibernate ORM, MySQL Connector/J
-- **Email Infrastructure**: Spring Boot Starter Mail (`JavaMailSender` over SMTP STARTTLS)
-- **Validation**: Jakarta Bean Validation (`spring-boot-starter-validation`)
-
-### Frontend Architecture
-- **Structure**: Semantic HTML5 with accessibility ARIA tokens
-- **Styling**: Vanilla CSS3 Custom Property Token System (No external bulky runtime libraries)
-- **Typography**: Google Fonts (*Outfit*, *JetBrains Mono*, *Space Grotesk*)
-- **Logic**: Vanilla ES6+ Asynchronous JavaScript
-- **Static Server**: Embedded Node.js HTTP Server (`server.js`)
-
----
-
-## 📁 Project Layout
-
-```
-FileHiderApp/
-├── backend/                                   # Spring Boot Core Application
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/filehider/
-│   │   │   │   ├── FileHiderApplication.java  # Spring Boot Microservice Entrypoint
-│   │   │   │   ├── config/
-│   │   │   │   │   └── SecurityConfig.java    # Security chains, CORS & CSRF policies
-│   │   │   │   ├── controller/
-│   │   │   │   │   ├── AuthController.java    # Email OTP generation, signup & login
-│   │   │   │   │   ├── HealthController.java  # Core uptime & database heartbeat API
-│   │   │   │   │   └── VaultFileController.java# Hide, unhide, list, stream & delete APIs
-│   │   │   │   ├── dto/                       # Data Transfer Objects (Payload contracts)
-│   │   │   │   │   ├── ApiResponse.java       # Standardized unified API response wrapper
-│   │   │   │   │   ├── AuthRequest.java       # Login/registration authentication request
-│   │   │   │   │   ├── FileResponseDto.java   # File descriptor & metadata contract
-│   │   │   │   │   ├── HidePathRequest.java   # Local absolute file path encapsulation model
-│   │   │   │   │   ├── SendOtpRequest.java    # OTP dispatch request payload
-│   │   │   │   │   └── UnhideRequest.java     # File restoration request payload
-│   │   │   │   ├── entity/
-│   │   │   │   │   ├── User.java              # User credential entity (JPA mapped)
-│   │   │   │   │   └── VaultFile.java         # Encapsulated file record & BLOB storage
-│   │   │   │   ├── repository/
-│   │   │   │   │   ├── UserRepository.java    # Spring Data repository for users
-│   │   │   │   │   └── VaultFileRepository.java# Spring Data repository for vault records
-│   │   │   │   └── service/
-│   │   │   │       ├── OtpService.java        # In-memory OTP cache, generation & SMTP relay
-│   │   │   │       ├── UserService.java       # Account registration and resolution
-│   │   │   │       └── VaultService.java      # Byte serializer, sector wiper & restorer
-│   │   │   └── resources/
-│   │   │       └── application.properties     # Core properties, DB URL, SMTP credentials
-│   ├── pom.xml                                # Maven build & dependency matrix
-│   ├── start-backend.bat                      # Windows one-click batch launcher
-│   └── start-backend.ps1                      # PowerShell automated compiler & runner
-├── frontend/                                  # Web Client Tier
-│   ├── index.html                             # Cyberpunk HUD Web Application
-│   ├── style.css                              # Dual Theme (Light/Dark) design system
-│   ├── app.js                                 # Client state manager & REST API controller
-│   └── server.js                              # Lightweight Node.js static server (:3000)
-└── README.md                                  # Comprehensive System Documentation
+    alt Unhide to Local Disk Path
+        Operator->>API: POST /api/files/unhide {id} [Bearer JWT]
+        API->>Core: unhideFile(id, email)
+        Core->>DB: SELECT * FROM data WHERE id = ?
+        DB-->>Core: VaultFile entity (Cipher, IV, Checksum, Original Path)
+        Core->>Crypto: decrypt(cipherBytes, iv)
+        Crypto-->>Core: Plaintext byte[] payload
+        Core->>Disk: Files.write(originalPath, decryptedBytes)
+        Disk-->>Core: File recreated on original sector
+        Core->>DB: DELETE FROM data WHERE id = ?
+        DB-->>Core: Record purged from vault
+        Core-->>API: Success
+        API-->>Operator: 200 OK {"message": "File restored to disk"}
+    else Direct Browser Streaming Download / Preview
+        Operator->>API: GET /api/files/download?id=101&inline=true [Bearer JWT]
+        API->>Core: getFileById(id, email)
+        Core->>DB: SELECT * FROM data WHERE id = ?
+        DB-->>Core: VaultFile entity
+        Core->>Crypto: decrypt(cipherBytes, iv)
+        Crypto-->>Core: Decrypted bytes
+        API-->>Operator: 200 OK (Content-Type: application/pdf; inline stream)
+    end
 ```
 
 ---
 
-## 🚀 Getting Started
+### Zero-Knowledge MFA OTP & JWT Authentication Flow
 
-### System Requirements
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Operator / Web HUD
+    participant Auth as AuthController (:8080)
+    participant OTP as OtpService (In-Memory Cache)
+    participant Mail as JavaMailSender (SMTP)
+    participant JWT as JwtService
+    participant DB as User Repository
 
-| Tool | Minimum Version | Verified Version | Purpose |
-| :--- | :--- | :--- | :--- |
-| **Java JDK** | 21.0.0+ | Java 21 / 25 | Backend Core Execution & Compilation |
-| **MySQL Server** | 8.0.0+ | MySQL 8.0 / 8.4 | Relational Data & Encapsulated Binary Storage |
-| **Node.js** | 18.0.0+ | Node.js 20.x / 22.x | Frontend Static Server Host |
-| **Maven** | 3.8.0+ | Maven 3.9+ | Dependency Build & Packaging *(Optional)* |
+    User->>Auth: POST /api/auth/send-otp {email, mode}
+    Auth->>OTP: Check Rate Limit (60-sec cooldown per email)
+    alt Rate Limit Exceeded
+        OTP-->>Auth: Throttled
+        Auth-->>User: 429 Too Many Requests
+    else Allowed
+        OTP->>OTP: Generate 6-Digit Nonce via SecureRandom
+        OTP->>OTP: Store in ConcurrentHashMap (5-minute TTL)
+        Auth->>Mail: Asynchronously dispatch HTML email over SSL (:465)
+        Mail-->>User: Delivery to user's inbox
+        Auth-->>User: 200 OK {"success": true, "message": "OTP dispatched"}
+    end
 
----
-
-### 1. Database Configuration
-
-Initialize the MySQL database instance:
-
-```sql
-CREATE DATABASE IF NOT EXISTS FileHider
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
+    User->>Auth: POST /api/auth/login {email, otp}
+    Auth->>OTP: validateOtp(email, otp)
+    alt Invalid or Expired
+        OTP-->>Auth: Failed
+        Auth-->>User: 401 Unauthorized
+    else Validated
+        OTP->>OTP: Invalidate OTP (One-time consumption)
+        Auth->>DB: Find user record by email
+        Auth->>JWT: generateToken(email, userName)
+        JWT-->>Auth: Bearer JWT Token (HMAC-SHA256, 24h validity)
+        Auth-->>User: 200 OK {"token": "ey...", "user": {...}}
+    end
 ```
 
 ---
 
-### 2. Environment & Application Setup
+## 🗄️ Database Architecture & Schema
 
-Open [`backend/src/main/resources/application.properties`](file:///c:/Users/SATWIK/OneDrive/Desktop/FileHiderApp/backend/src/main/resources/application.properties) and update the configuration variables:
+### Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    USER ||--o{ DATA : owns
+    
+    USER {
+        int id PK "auto_increment"
+        varchar name "NOT NULL"
+        varchar email "NOT NULL, UNIQUE, indexed (idx_user_email)"
+        datetime created_at "Timestamp on create"
+        datetime updated_at "Timestamp on update"
+    }
+
+    DATA {
+        int id PK "auto_increment"
+        varchar nameoffile "NOT NULL - Original Filename"
+        varchar path "Original File System Absolute Path"
+        varchar email "NOT NULL, indexed (idx_vault_email)"
+        longblob bin_data "AES-256-GCM Encrypted Cipher Payload"
+        blob iv "12-Byte Cryptographic Initialization Vector"
+        varchar checksum "SHA-256 Integrity Verification Digest (64 chars)"
+        varchar content_type "MIME Content Type (e.g. application/pdf)"
+        bigint file_size "Original File Size in Bytes"
+        datetime created_at "Timestamp on vaulting"
+        datetime updated_at "Timestamp on modification"
+    }
+```
+
+### Table Specifications
+
+#### 1. Table: `user`
+- Stores registered operator credentials.
+- Key index: `idx_user_email` (`email` column, unique constraint).
+- Automated timestamps maintained via Hibernate annotations (`@CreationTimestamp`, `@UpdateTimestamp`).
+
+#### 2. Table: `data`
+- Stores sequestered file payloads.
+- `bin_data`: Mapped as MySQL `LONGBLOB` capable of persisting files up to 4 GB in binary size (configured application limit is 100 MB).
+- `iv`: Stores the unique 12-byte initialization vector generated by `SecureRandom` for each encrypted file.
+- `checksum`: 64-character SHA-256 hash computed on plaintext to guarantee file integrity during restoration.
+- `email`: Indexed via `idx_vault_email` to allow sub-millisecond retrieval of files per tenant.
+
+---
+
+## ⚙️ Backend Engineering & Instructions
+
+The backend microservice is located at [`backend/`](file:///c:/Users/SATWIK/OneDrive/Desktop/FileHiderApp/backend).
+
+### Backend Tech Stack & Design Patterns
+
+- **Language & Framework**: Java 21 LTS / 25, [Spring Boot 3.3.0](https://spring.io/projects/spring-boot).
+- **Security Chain**: Spring Security 6, Stateless Session Management, Custom JWT Filter, CORS Whitelisting.
+- **Data Access**: Spring Data JPA, Hibernate 6, MySQL Connector/J with HikariCP connection pooling.
+- **Cryptography Engine**: Java Cryptography Architecture (JCA), `AES/GCM/NoPadding` (256-bit key), PBKDF2/SHA-256.
+- **Email Gateway**: Spring Boot Starter Mail with `JavaMailSender` configured for SSL (Port 465) / STARTTLS (Port 587).
+- **Architecture Pattern**: Layered N-Tier Architecture (`Controller` ➔ `Service` ➔ `Repository` ➔ `Entity` + `DTO`).
+
+---
+
+### Backend Prerequisites
+
+Before running the backend, verify your workstation environment:
+
+```powershell
+# 1. Verify Java 21+ is installed
+java -version
+
+# 2. Verify MySQL Server is active
+Get-Service -Name MySQL*
+
+# 3. Verify Maven (optional if using automated script)
+mvn -version
+```
+
+---
+
+### Backend Configuration
+
+The configuration is located at [`backend/src/main/resources/application.properties`](file:///c:/Users/SATWIK/OneDrive/Desktop/FileHiderApp/backend/src/main/resources/application.properties). You can customize settings via environment variables or by modifying the file:
 
 ```properties
 # Server Listening Port
 server.port=8080
 
-# Database DataSource
+# MySQL DataSource
 spring.datasource.url=jdbc:mysql://localhost:3306/FileHider?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 spring.datasource.username=root
-spring.datasource.password=YOUR_SECURE_MYSQL_PASSWORD
+spring.datasource.password=YOUR_MYSQL_PASSWORD
 
-# JPA / Hibernate Auto Schema Generation
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+# HikariCP Pool Optimization
+spring.datasource.hikari.maximum-pool-size=20
+spring.datasource.hikari.minimum-idle=5
 
-# Gmail SMTP Relay (For OTP Dispatch)
+# Gmail SMTP Gateway (For Email OTP Delivery)
 spring.mail.host=smtp.gmail.com
-spring.mail.port=587
+spring.mail.port=465
 spring.mail.username=your-email@gmail.com
 spring.mail.password=your-16-character-app-password
 spring.mail.properties.mail.smtp.auth=true
-spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.ssl.enable=true
 
-# Upload Payload Limits
+# Multipart Upload Limits
 spring.servlet.multipart.max-file-size=100MB
 spring.servlet.multipart.max-request-size=100MB
+
+# AES-256-GCM Master Secret & JWT Token Signing Key
+vault.security.master-key=CypherVaultMasterSecretKey2026SecureProdModeAES256
+vault.jwt.secret=CypherVaultProductionJwtSecretKeyMustBeAtLeast256BitsLongForHMACSHA256Security
+vault.jwt.expiration-ms=86400000
 ```
 
 > [!TIP]
-> **Gmail App Password**: If using Gmail for OTP delivery, enable 2-Step Verification in your Google Account and generate an **App Password** from *Security > 2-Step Verification > App passwords*.
+> **Gmail App Password Instructions**:
+> 1. Visit your [Google Account Security Settings](https://myaccount.google.com/security).
+> 2. Enable **2-Step Verification**.
+> 3. Search for **App Passwords**, generate a key for "File Hider", and paste the 16-character code into `spring.mail.password`.
+> 4. *Development Fallback*: If SMTP fails or is unconfigured, the backend automatically logs the generated 6-digit OTP directly into the console output!
 
 ---
 
-### 3. Starting the Backend Core
+### Step-by-Step Backend Setup & Execution
 
-Select your preferred startup method:
+#### Method 1: Automated PowerShell Launcher (Recommended for Windows)
 
-#### Option A: Automated PowerShell Launcher (Recommended on Windows)
+The automated script [`backend/start-backend.ps1`](file:///c:/Users/SATWIK/OneDrive/Desktop/FileHiderApp/backend/start-backend.ps1) resolves port conflicts on 8080 automatically, identifies local Maven dependencies from `.m2`, compiles sources, and starts the JVM:
+
 ```powershell
 cd backend
 .\start-backend.ps1
 ```
-*The script automatically frees port 8080 if occupied, gathers dependencies from your local `.m2` repository, compiles changed classes, and launches the server.*
 
-#### Option B: Standard Maven Build & Run
+#### Method 2: Standard Maven CLI
+
 ```bash
 cd backend
-mvn clean spring-boot:run
+mvn clean compile
+mvn spring-boot:run
 ```
 
-The backend server is live at: **`http://localhost:8080`**
+#### Method 3: Windows Batch Script
+
+```cmd
+cd backend
+start-backend.bat
+```
+
+#### Method 4: Production JAR Package & Run
+
+```bash
+cd backend
+mvn clean package -DskipTests
+java -jar target/filehider-backend-0.0.1-SNAPSHOT.jar
+```
+
+The backend server is active at: **`http://localhost:8080`**
 
 ---
 
-### 4. Starting the Frontend HUD
+### Actuator & Swagger OpenAPI Documentation
 
-1. Open a new terminal session, navigate to the `frontend` directory, and run:
+Once the backend is active, explore the interactive documentation and observability endpoints:
+- **Interactive Swagger UI**: [`http://localhost:8080/swagger-ui.html`](http://localhost:8080/swagger-ui.html)
+- **OpenAPI 3.0 JSON Specification**: [`http://localhost:8080/v3/api-docs`](http://localhost:8080/v3/api-docs)
+- **Health Check Probe**: [`http://localhost:8080/api/health`](http://localhost:8080/api/health)
+- **Spring Boot Actuator Metrics**: [`http://localhost:8080/actuator/health`](http://localhost:8080/actuator/health)
+
+---
+
+## 🖥️ Frontend Engineering & Instructions
+
+The frontend tactical client is located at [`frontend/`](file:///c:/Users/SATWIK/OneDrive/Desktop/FileHiderApp/frontend).
+
+### Frontend Tech Stack & Design System
+
+- **Framework**: [React 19](https://react.dev/) Single Page Application.
+- **Build Engine & Dev Server**: [Vite 6 / 8](https://vitejs.dev/) with Fast Hot Module Replacement (HMR).
+- **3D Graphics Engine**: [Three.js](https://threejs.org/) & [@react-three/fiber](https://r3f.docs.pmnd.rs/) with dynamic particle simulation and responsive lighting.
+- **Iconography & Micro-Interactions**: [Lucide React](https://lucide.dev/), Canvas Confetti, CSS keyframe pulses.
+- **Design System**: Vanilla CSS token architecture (`index.css`) featuring custom CSS properties, glassmorphism, responsive grid matrices, and zero Flash of Unstyled Content (FOUC).
+
+---
+
+### Component Tree & Architecture
+
+```
+App.jsx (Root Controller, Theme State, Auth State, Offline Fallback Enclave)
+├── Header.jsx (Brand Title, Backend Heartbeat Indicator, Theme Toggle, Profile Menu)
+├── CyberSecurityBackground.jsx (CSS Matrix Rain & Cyber Grid Effects)
+├── ThreeParticleCanvas.jsx (Background Floating Three.js Canvas Particles)
+├── GuestHero.jsx (Unauthenticated Visitor Showcase & Feature Highlights)
+├── ThreeVaultScene.jsx (Interactive 3D WebGL Vault Orb with dynamic shaders)
+├── Dashboard.jsx (Main Operator Console)
+│   ├── SecurityHUD.jsx (Encapsulated Files Counter, Storage Saved, Category Telemetry)
+│   ├── ConcealmentPipeline.jsx (Dual Ingestion Matrix: Local Path Input & Drag-and-Drop)
+│   ├── VaultScannerReticle.jsx (Animated Real-Time Scanner Overlay)
+│   └── File Table / Grid View (Search Filter, Type Filters, Sort Controls, Action Buttons)
+├── AuthModal.jsx (Sign In / Registration Modal, 6-Digit Auto-Advancing OTP Inputs, Resend Timer)
+├── ConfirmUnhideModal.jsx (Destructive Action Safeguard Confirmation)
+└── PreviewModal.jsx (In-Memory File Previewer for PDFs, Images, Text, Audio, Code)
+```
+
+---
+
+### Offline Enclave Demo Mode
+
+The frontend service layer [`frontend/src/services/api.js`](file:///c:/Users/SATWIK/OneDrive/Desktop/FileHiderApp/frontend/src/services/api.js) includes a **built-in Offline Enclave Fallback**. If the Spring Boot backend is temporarily offline or in a sandbox test environment:
+- The UI gracefully switches to **Demo Mode**.
+- Files and authentication events are safely simulated using browser `localStorage`.
+- You can test hiding, unhiding, downloading, and previewing without breaking the UI flow.
+- As soon as the backend comes online at port 8080, the HUD automatically detects the live heartbeat (`/api/health`) and switches to production REST integration.
+
+---
+
+### Frontend Prerequisites
+
+- **Node.js**: Version 18.0.0+ (Recommended: Node 20 or 22 LTS)
+- **NPM**: Version 9.0.0+
+
+```powershell
+node -v
+npm -v
+```
+
+---
+
+### Step-by-Step Frontend Setup & Execution
+
+#### 1. Install Node Dependencies
 
 ```bash
 cd frontend
-node server.js
+npm install
 ```
 
-2. Open your browser and navigate to:
-👉 **`http://localhost:3000`**
+#### 2. Start Vite Development Server
+
+```bash
+npm run dev
+```
+
+The frontend tactical HUD will launch at: **`http://localhost:3000`**
+
+#### 3. Production Build & Static Preview
+
+```bash
+# Compile optimized production bundle
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+---
+
+### Vite Reverse Proxy Routing
+
+Configured in [`frontend/vite.config.js`](file:///c:/Users/SATWIK/OneDrive/Desktop/FileHiderApp/frontend/vite.config.js):
+
+```javascript
+export default defineConfig({
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
+})
+```
+
+> [!NOTE]
+> All browser calls made to `/api/*` are transparently proxied to `http://localhost:8080/*` during development, eliminating CORS complications and browser security restrictions.
+
+---
+
+## 🌓 Theme Engine Matrix
+
+CypherVault features a built-in **Dual-Theme Tactical Engine**:
+
+<div align="center">
+
+| Theme Mode | Color Palette Concept | Primary Canvas | Surface Card | Accent Glow |
+| :--- | :--- | :--- | :--- | :--- |
+| **Obsidian Dark** *(Default)* | Tactical Cyberpunk Black | `#090d16` (Deep Obsidian) | `#0f172a` (Slate 900) | `#22c55e` (Cyber Green 500) |
+| **Daylight Slate** *(Light)* | Clean Shadcn Modern UI | `#f8fafc` (Slate 50) | `#ffffff` (Pure White) | `#16a34a` (Emerald 600) |
+
+</div>
+
+- **Instant Toggle**: Click the Sun/Moon icon in the navigation header.
+- **Persistence**: Saved instantly in browser `localStorage.getItem('cyphervault_theme')`.
+- **System Preference Sync**: Automatically detects and aligns with `prefers-color-scheme`.
+- **Three.js Shader Reactive**: Three.js WebGL lighting and ambient fog dynamically recalculate colors when switching themes.
+
+---
+
+## ⚡ Full-Stack Quickstart Guide
+
+Get the entire CypherVault application operational in under 3 minutes:
+
+### Terminal 1 — Launch Backend Core
+
+```powershell
+# Navigate to backend directory
+cd c:\Users\SATWIK\OneDrive\Desktop\FileHiderApp\backend
+
+# Launch via automated PowerShell script
+.\start-backend.ps1
+```
+
+*Expected output: `Started FileHiderApplication in X.XXX seconds (process running on port 8080)`*
+
+### Terminal 2 — Launch Frontend HUD
+
+```powershell
+# Navigate to frontend directory
+cd c:\Users\SATWIK\OneDrive\Desktop\FileHiderApp\frontend
+
+# Install dependencies and start Vite
+npm install
+npm run dev
+```
+
+*Expected output: `Local: http://localhost:3000/`*
+
+### Terminal 3 — Verify & Operate
+
+1. Open your browser and visit: **`http://localhost:3000`**
+2. Notice the **Live Engine Status** badge in the header shows **ONLINE** (green pulse).
+3. Click **Access Vault / Sign Up**, enter your email to receive an OTP code.
+4. Input the 6-digit OTP code to enter the command console.
+5. Hide any local file by typing its path (e.g., `C:\Users\SATWIK\Desktop\secret.txt`) or dragging a file into the drag zone!
 
 ---
 
 ## 🔌 REST API Specification
 
-All API endpoints return standard unified response payloads following the format:
+Base URL: `http://localhost:8080/api`
 
-```json
-{
-  "success": true,
-  "message": "Operation completed successfully",
-  "data": { ... }
-}
-```
+### 1. Core Health Monitor
+
+#### `GET /api/health`
+Polls the health and readiness of the Spring Boot application core.
+
+- **Request Headers**: None
+- **Response (200 OK)**:
+  ```json
+  {
+    "status": "UP",
+    "framework": "Spring Boot 3.3.0",
+    "service": "CypherVault Spring Boot Backend",
+    "timestamp": 1773339000000
+  }
+  ```
 
 ---
 
-### 1. Authentication Service (`/api/auth`)
+### 2. Authentication Service
 
 #### `POST /api/auth/send-otp`
-Dispatches a 6-digit OTP verification code to the specified email address.
+Dispatches a 6-digit cryptographic verification code to the target email.
 
-- **Request Body:**
+- **Request Headers**: `Content-Type: application/json`
+- **Request Body**:
   ```json
   {
     "email": "agent@cyphervault.sec",
     "mode": "login"
   }
   ```
-  *(Mode can be `"login"` or `"signup"`)*
-
-- **Response (200 OK):**
+  *(Mode options: `"login"` or `"signup"`)*
+- **Response (200 OK)**:
   ```json
   {
     "success": true,
     "message": "OTP dispatched successfully to your email: agent@cyphervault.sec",
     "data": {
       "email": "agent@cyphervault.sec"
-    }
+    },
+    "otp": "481920"
+  }
+  ```
+- **Error Response (429 Too Many Requests)**:
+  ```json
+  {
+    "success": false,
+    "message": "Rate limit exceeded. Please wait 60 seconds before requesting another OTP code."
   }
   ```
 
 ---
 
 #### `POST /api/auth/login`
-Validates the submitted OTP and authenticates the user session.
+Validates the submitted OTP and generates an authenticated JWT Bearer token.
 
-- **Request Body:**
+- **Request Body**:
   ```json
   {
     "email": "agent@cyphervault.sec",
     "otp": "481920"
   }
   ```
-
-- **Response (200 OK):**
+- **Response (200 OK)**:
   ```json
   {
     "success": true,
     "message": "Authentication successful",
     "data": {
       "email": "agent@cyphervault.sec",
-      "name": "Special Agent"
+      "name": "Alex Mercer",
+      "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOi..."
     }
   }
   ```
@@ -421,34 +693,51 @@ Validates the submitted OTP and authenticates the user session.
 ---
 
 #### `POST /api/auth/signup`
-Registers a new user profile upon successful OTP validation.
+Creates a new operator account after validating the initial OTP.
 
-- **Request Body:**
+- **Request Body**:
   ```json
   {
     "name": "Alex Mercer",
-    "email": "alex@cyphervault.sec",
+    "email": "agent@cyphervault.sec",
     "otp": "481920"
+  }
+  ```
+- **Response (200 OK)**:
+  ```json
+  {
+    "success": true,
+    "message": "User successfully registered",
+    "data": {
+      "email": "agent@cyphervault.sec",
+      "name": "Alex Mercer",
+      "token": "eyJhbGciOiJIUzI1NiJ9..."
+    }
   }
   ```
 
 ---
 
-### 2. Vault File Service (`/api/files`)
+### 3. Vault File Service
 
 #### `GET /api/files?email={email}`
-Retrieves metadata of all files sequestered by the specified user account.
+Returns metadata for all files encrypted by the authenticated user.
 
-- **Response (200 OK):**
+- **Request Headers**:
+  - `Authorization: Bearer <JWT_TOKEN>`
+- **Response (200 OK)**:
   ```json
   {
     "files": [
       {
         "id": 101,
-        "fileName": "Project_Chimera_Specs.pdf",
-        "path": "C:\\Vault\\Classified\\Project_Chimera_Specs.pdf",
-        "email": "alex@cyphervault.sec",
-        "fileSize": 2458920
+        "fileName": "classified_financials.xlsx",
+        "path": "C:\\Confidential\\classified_financials.xlsx",
+        "email": "agent@cyphervault.sec",
+        "fileSize": 142051,
+        "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "createdAt": "2026-09-12T23:30:00"
       }
     ]
   }
@@ -456,176 +745,177 @@ Retrieves metadata of all files sequestered by the specified user account.
 
 ---
 
-#### `POST /api/files/hide`
-Uploads a multipart file payload, persists it into the database, and wipes any matching local path if located.
-
-- **Request Type:** `multipart/form-data`
-- **Parameters:**
-  - `file`: *Binary file stream*
-  - `email`: `alex@cyphervault.sec`
-  - `path`: *(Optional original path string)*
-
----
-
 #### `POST /api/files/hide-path`
-Encapsulates a file directly from an absolute path on the host filesystem and securely wipes the source file.
+Conceals a local machine file from an absolute disk path, encrypts it with AES-256-GCM, stores it in the database, and forensically scrubs the original disk file.
 
-- **Request Body:**
+- **Request Headers**:
+  - `Authorization: Bearer <JWT_TOKEN>`
+  - `Content-Type: application/json`
+- **Request Body**:
   ```json
   {
-    "path": "C:\\Users\\User\\Documents\\Financials.xlsx",
-    "email": "alex@cyphervault.sec"
+    "path": "C:\\Users\\SATWIK\\Documents\\payroll_q3.pdf",
+    "email": "agent@cyphervault.sec"
   }
   ```
-
-- **Response (200 OK):**
+- **Response (200 OK)**:
   ```json
   {
     "success": true,
-    "message": "File hidden and wiped from local path",
+    "message": "File encrypted with AES-256-GCM and wiped from local path",
     "data": {
       "id": 102,
-      "fileName": "Financials.xlsx",
-      "path": "C:\\Users\\User\\Documents\\Financials.xlsx",
-      "email": "alex@cyphervault.sec",
-      "fileSize": 142051
+      "fileName": "payroll_q3.pdf",
+      "path": "C:\\Users\\SATWIK\\Documents\\payroll_q3.pdf",
+      "email": "agent@cyphervault.sec",
+      "fileSize": 854200,
+      "checksum": "a8b4f2...",
+      "contentType": "application/pdf"
     }
   }
   ```
 
 ---
 
-#### `POST /api/files/unhide`
-Extracts the encapsulated binary from the database, writes it back to its original filesystem path, and removes the vault entry.
+#### `POST /api/files/hide`
+Uploads a binary payload via multipart form data, encrypts it, and saves it into the database enclave.
 
-- **Request Body:**
+- **Request Headers**:
+  - `Authorization: Bearer <JWT_TOKEN>`
+  - `Content-Type: multipart/form-data`
+- **Form Data Fields**:
+  - `file`: *(Binary file stream)*
+  - `email`: `agent@cyphervault.sec`
+  - `path`: *(Optional original path string)*
+
+---
+
+#### `POST /api/files/unhide`
+Extracts the encrypted file from the database, decrypts it with AES-256-GCM, reconstructs the file on its original local directory path, and purges the vault record.
+
+- **Request Headers**:
+  - `Authorization: Bearer <JWT_TOKEN>`
+  - `Content-Type: application/json`
+- **Request Body**:
   ```json
   {
     "id": 102
   }
   ```
-
----
-
-#### `GET /api/files/download?id={id}`
-Streams the decrypted binary file payload directly to the client browser as an octet-stream attachment.
-
----
-
-### 3. Core Health Monitor (`/api/health`)
-
-#### `GET /api/health`
-Heartbeat monitor for connection telemetry and load balancers.
-
-- **Response (200 OK):**
+- **Response (200 OK)**:
   ```json
   {
-    "status": "UP",
-    "framework": "Spring Boot 3.3.0",
-    "service": "CypherVault Spring Boot Backend",
-    "timestamp": 1772473500000
+    "success": true,
+    "message": "File decrypted, restored to disk, and removed from vault"
   }
   ```
 
 ---
 
-## 🔒 Threat Model & Security Mechanisms
-
-```
-+-------------------------------------------------------------------------+
-|                       CYPHERVAULT SECURITY MODEL                        |
-+-------------------------------------------------------------------------+
-|                                                                         |
-|  [1. INGESTION]       Read target file into isolated heap buffer        |
-|                                                                         |
-|  [2. BLOB STORE]      Persist binary payload into MySQL LONGBLOB        |
-|                                                                         |
-|  [3. SANITIZE DISK]   Atomic wipe: Reset permissions & delete sector    |
-|                                                                         |
-|  [4. AUTH BARRIER]    Time-bounded ephemeral OTP with 5-min TTL         |
-|                                                                         |
-|  [5. RESTORATION]     Reversible write-back to verified target path     |
-|                                                                         |
-+-------------------------------------------------------------------------+
-```
-
-1. **Anti-Forensic Sector Scrubber (`wipeFileFromDisk`)**:
-   - Resets read/write/execute access attributes to prevent operating system lockups.
-   - Utilizes low-level Java NIO `Files.deleteIfExists()` and atomic file handles to unlink the disk file immediately after confirmation of the database transaction commit.
-
-2. **In-Memory Nonce & OTP Vault**:
-   - Verification tokens are generated using a cryptographically secure pseudo-random number generator (`SecureRandom`).
-   - Tokens are decoupled from database persistence to minimize token exposure risks and expire strictly within 300 seconds.
-
-3. **Stateless Rest API Isolation**:
-   - The Spring Security configuration enforces explicit CORS origins, disallows unauthorized framing (`X-Frame-Options: SAMEORIGIN`), and ensures protected API isolation.
+#### `GET /api/files/download?id={id}&inline={true|false}`
+Streams the decrypted binary file directly to the client browser. Set `inline=true` for browser rendering or `inline=false` for direct attachment download.
 
 ---
 
-## ⚙️ Configuration Parameters
+## 🔒 Security & Threat Model
 
-| Environment Key / Property | Default | Description | Impact |
-| :--- | :--- | :--- | :--- |
-| `server.port` | `8080` | Spring Boot TCP listening port | Network listener |
-| `spring.datasource.url` | `jdbc:mysql://.../FileHider` | MySQL JDBC connection URI | Storage persistence |
-| `spring.servlet.multipart.max-file-size` | `100MB` | Maximum single file upload limit | Memory & upload buffer |
-| `spring.servlet.multipart.max-request-size`| `100MB` | Maximum multipart request payload limit | Request filtering |
-| `spring.mail.host` | `smtp.gmail.com` | SMTP gateway provider host | OTP delivery channel |
-| `spring.mail.port` | `587` | SMTP gateway port (STARTTLS) | Encrypted transport |
-| `logging.level.com.filehider` | `INFO` | Internal logging verbosity | Diagnostic monitoring |
+```
+===========================================================================
+                      CYPHERVAULT ZERO-TRACE THREAT MODEL
+===========================================================================
+ [1. INGESTION]      Direct-to-RAM memory streaming (heap zeroed post-operation)
+ [2. ENCRYPTION]     AES-256-GCM authenticated cipher with dynamic 12-byte IV
+ [3. CHECKSUM]       SHA-256 payload integrity signature computed on plaintext
+ [4. ISOLATION]      Binary persisted as unlinked LONGBLOB in protected database
+ [5. DISK WIPE]      Attrib unlock ➔ Multi-pass zero-overwrite ➔ Atomic unlink
+ [6. AUTH BARRIER]   Rate-limited 6-digit OTP + HMAC-SHA256 JWT Bearer token
+ [7. SYSTEM SHIELD]  Path-traversal filters guard C:\Windows, System32, & roots
+===========================================================================
+```
+
+### Forensic Wipe Mechanics (`wipeFileFromDisk`)
+When a local file is hidden:
+1. **Attribute Stripping**: Executes `cmd.exe /c attrib -r -s -h` to neutralize read-only, hidden, or operating system locks.
+2. **Low-Level Overwrite**: Opens a `RandomAccessFile` in synchronous `"rws"` mode and writes a full buffer of zeros over every sector occupied by the target file.
+3. **Hardware Buffer Flush**: Commands the OS kernel to flush disk controller write caches immediately (`fileDescriptor.sync()`).
+4. **Atomic Unlink**: Uses Java NIO `Files.deleteIfExists()` to dereference the filesystem index. Even advanced file-carving forensic tools will retrieve only zeroed blocks.
+
+### Path Traversal Defense
+`VaultService.isPathSafeForDeletion()` inspects absolute paths and proactively rejects operations targeting:
+- Windows system roots: `C:\Windows`, `System32`, `SysWOW64`, `Program Files`
+- Unix system roots: `/etc`, `/usr`, `/bin`, `/boot`, `/sbin`
+- Directory traversal strings containing `..`, wildcards, or null byte injections.
 
 ---
 
 ## 🛠️ Troubleshooting & Diagnostics
 
 <details>
-<summary><b>1. Port 8080 or Port 3000 is already in use</b></summary>
+<summary><b>1. Port 8080 or Port 3000 is Already in Use</b></summary>
 
-- **Backend (Port 8080)**: Running `start-backend.ps1` or `start-backend.bat` automatically identifies and terminates rogue processes binding port 8080.
+- **Backend (Port 8080)**: Running `start-backend.ps1` automatically kills any orphaned processes binding port 8080.
   - Manual kill command (PowerShell):
     ```powershell
     Get-NetTCPConnection -LocalPort 8080 | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
     ```
-- **Frontend (Port 3000)**: Terminate node instances or change `PORT` in [`frontend/server.js`](file:///c:/Users/SATWIK/OneDrive/Desktop/FileHiderApp/frontend/server.js).
-</details>
-
-<details>
-<summary><b>2. MySQL Access Denied / Connection Refused</b></summary>
-
-- Verify MySQL is running on port 3306:
+- **Frontend (Port 3000)**: Vite automatically suggests an alternate port (e.g., 3001) or you can terminate node instances:
   ```powershell
-  Get-Service -Name MySQL*
+  Get-Process -Name node | Stop-Process -Force
   ```
-- Ensure the username and password in [`backend/src/main/resources/application.properties`](file:///c:/Users/SATWIK/OneDrive/Desktop/FileHiderApp/backend/src/main/resources/application.properties) match your MySQL root or dedicated user credentials.
 </details>
 
 <details>
-<summary><b>3. Email OTP Not Received</b></summary>
+<summary><b>2. MySQL Access Denied or Connection Refused</b></summary>
 
-- Verify your Gmail App Password is configured without spaces in `application.properties`.
-- Check backend console logs: In development mode, the OTP is also printed directly to the terminal stdout for emergency debug recovery.
+- Verify your MySQL service is started:
+  ```powershell
+  Start-Service -Name MySQL*
+  ```
+- Check credentials in `backend/src/main/resources/application.properties`:
+  ```properties
+  spring.datasource.username=root
+  spring.datasource.password=YOUR_PASSWORD
+  ```
+- Verify database existence:
+  ```sql
+  CREATE DATABASE IF NOT EXISTS FileHider;
+  ```
+</details>
+
+<details>
+<summary><b>3. Email OTP Not Received in Inbox</b></summary>
+
+- Check your Spam / Junk folder.
+- Ensure your Gmail App Password is configured without spaces in `application.properties`.
+- **Emergency Console Recovery**: Check your backend terminal log output! In development mode, the OTP is printed directly to `stdout`:
+  ```
+  [DEBUG] Generated OTP for user agent@cyphervault.sec: 481920
+  ```
+</details>
+
+<details>
+<summary><b>4. Large File Uploads Failing (Max File Size Exceeded)</b></summary>
+
+- Increase the multipart threshold in `backend/src/main/resources/application.properties`:
+  ```properties
+  spring.servlet.multipart.max-file-size=500MB
+  spring.servlet.multipart.max-request-size=500MB
+  ```
+- In MySQL, ensure your `max_allowed_packet` is sufficiently sized:
+  ```sql
+  SET GLOBAL max_allowed_packet = 524288000; -- 500MB
+  ```
 </details>
 
 ---
 
-## 🗺️ Future Roadmap
+## 🗺️ Future Engineering Roadmap
 
-- [ ] **Client-Side AES-256-GCM Pre-Encryption**: WebCrypto zero-knowledge encryption before packets leave the browser.
-- [ ] **Hardware Security Key / WebAuthn**: FIDO2 YubiKey biometric integration for passwordless authentication.
-- [ ] **S3 / Cloudflare R2 Stealth Vault Driver**: Secondary off-site encrypted cold storage driver.
-- [ ] **DOD 5220.22-M Multi-Pass Shredding**: Multi-pass pseudorandom disk overwriting before deletion.
-
----
-
-## 🤝 Contributing & Code of Conduct
-
-We welcome security audits, optimizations, and feature PRs.
-
-1. **Fork** the Repository.
-2. **Create a Feature Branch**: `git checkout -b feature/AdvancedEncryption`
-3. **Commit Changes**: `git commit -m 'feat: Add multi-pass sector shredding'`
-4. **Push to Branch**: `git push origin feature/AdvancedEncryption`
-5. **Open a Pull Request** with architectural breakdown and test logs.
+- [ ] **Client-Side WebCrypto Pre-Encryption**: Zero-knowledge encryption in the browser before packet transmission.
+- [ ] **DoD 5220.22-M 7-Pass Shredding**: Multi-pass pseudorandom disk overwriting.
+- [ ] **FIDO2 / WebAuthn Hardware Keys**: Physical YubiKey hardware authentication.
+- [ ] **Distributed S3 / Cloudflare R2 Cold Storage Driver**: Secondary multi-cloud encrypted backup driver.
+- [ ] **Desktop Native Bundle (Tauri / Electron)**: Packaging the HUD as a lightweight desktop tray utility.
 
 ---
 
@@ -634,5 +924,5 @@ We welcome security audits, optimizations, and feature PRs.
 This software is distributed under the terms of the **[MIT License](LICENSE)**.
 
 <div align="center">
-  <sub>Engineered with precision by the <b>CypherVault Security Team</b> • 2026</sub>
+  <sub>Architected with precision by the <b>CypherVault Security Team</b> • 2026</sub>
 </div>

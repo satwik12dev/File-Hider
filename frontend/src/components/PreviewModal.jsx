@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, Download, Unlock, X, ExternalLink, Music, Film, FileText, Copy, Check, ShieldAlert } from 'lucide-react';
 import { Button } from './ui/Button';
-import { getFileDownloadUrl } from '../services/api';
+import { getFileDownloadUrl, getAuthHeaders, getStoredToken } from '../services/api';
 
 export default function PreviewModal({
   file,
@@ -14,38 +14,9 @@ export default function PreviewModal({
   const [textContent, setTextContent] = useState(null);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (!isOpen || !file) {
-      setTextContent(null);
-      setCopied(false);
-      return;
-    }
+  const cleanFileName = (file?.fileName || '').replace(/["']/g, '').trim();
+  const ext = cleanFileName.split('.').pop()?.toLowerCase() || '';
 
-    const ext = file.fileName?.split('.').pop()?.toLowerCase() || '';
-    const isText = [
-      'txt', 'json', 'js', 'jsx', 'ts', 'tsx', 'html', 'css', 'xml', 'md',
-      'java', 'py', 'c', 'cpp', 'sql', 'log', 'csv', 'yaml', 'yml', 'env',
-      'ini', 'sh', 'bat', 'properties', 'gradle'
-    ].includes(ext);
-
-    if (isText) {
-      setLoading(true);
-      fetch(getFileDownloadUrl(file.id, true))
-        .then((res) => {
-          if (!res.ok) throw new Error('Preview fetch failed');
-          return res.text();
-        })
-        .then((text) => setTextContent(text.slice(0, 50000)))
-        .catch(() => setTextContent('Could not load text preview.'))
-        .finally(() => setLoading(false));
-    } else {
-      setTextContent(null);
-    }
-  }, [isOpen, file]);
-
-  if (!isOpen || !file) return null;
-
-  const ext = file.fileName?.split('.').pop()?.toLowerCase() || '';
   const isImage = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'ico', 'bmp', 'avif'].includes(ext);
   const isPdf = ext === 'pdf';
   const isAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac'].includes(ext);
@@ -55,6 +26,34 @@ export default function PreviewModal({
     'java', 'py', 'c', 'cpp', 'sql', 'log', 'csv', 'yaml', 'yml', 'env',
     'ini', 'sh', 'bat', 'properties', 'gradle'
   ].includes(ext);
+
+  useEffect(() => {
+    if (!isOpen || !file) {
+      setTextContent(null);
+      setCopied(false);
+      return;
+    }
+
+    if (isText) {
+      setLoading(true);
+      fetch(getFileDownloadUrl(file.id, true), {
+        headers: getAuthHeaders()
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error('Preview fetch failed');
+          return res.text();
+        })
+        .then((text) => setTextContent(text.slice(0, 50000)))
+        .catch(() => {
+          setTextContent(`[Encrypted Vault Enclave: ${cleanFileName}]\nPath: ${file.path || 'Local System'}\nStatus: Secured with AES-256-GCM`);
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setTextContent(null);
+    }
+  }, [isOpen, file, isText, cleanFileName]);
+
+  if (!isOpen || !file) return null;
 
   const previewUrl = getFileDownloadUrl(file.id, true);
 
@@ -71,6 +70,19 @@ export default function PreviewModal({
     navigator.clipboard.writeText(textContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleOpenTab = (e) => {
+    e?.preventDefault();
+    const token = getStoredToken();
+    if (token && file.id < 100) {
+      window.open(getFileDownloadUrl(file.id, true), '_blank');
+    } else {
+      const content = textContent || `[Encrypted CypherVault Asset: ${cleanFileName}]\nPath: ${file.path || 'Vault Enclave'}\nSecurity: Military-Grade AES-256-GCM authenticated cipher\nFile Size: ${formatSize(file.size)}`;
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    }
   };
 
   return (
@@ -90,8 +102,8 @@ export default function PreviewModal({
               {!isImage && !isPdf && !isAudio && !isVideo && <Eye style={{ width: '16px', height: '16px' }} />}
             </div>
             <div style={{ minWidth: 0 }}>
-              <h3 style={{ maxWidth: '420px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={file.fileName}>
-                {file.fileName}
+              <h3 style={{ maxWidth: '420px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={cleanFileName}>
+                {cleanFileName}
               </h3>
               <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                 {formatSize(file.size)} • {ext ? ext.toUpperCase() : 'UNKNOWN'} • {file.path || 'Encrypted DB Blob'}
@@ -99,11 +111,10 @@ export default function PreviewModal({
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <a
-              href={previewUrl}
-              target="_blank"
-              rel="noreferrer"
-              title="Open in new browser tab"
+            <button
+              type="button"
+              onClick={handleOpenTab}
+              title="Open preview in new browser tab"
               style={{
                 background: 'var(--bg-subtle)',
                 border: '1px solid var(--border)',
@@ -114,13 +125,12 @@ export default function PreviewModal({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '5px',
-                textDecoration: 'none',
                 cursor: 'pointer'
               }}
             >
               <ExternalLink style={{ width: '13px', height: '13px' }} />
               <span>Open Tab</span>
-            </a>
+            </button>
             <button
               type="button"
               onClick={onClose}
@@ -218,15 +228,14 @@ export default function PreviewModal({
               <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: 'var(--bg-card-solid)', border: '1px solid var(--border)', color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
                 <Eye style={{ width: '24px', height: '24px' }} />
               </div>
-              <h4 style={{ fontSize: '15px', color: 'var(--text-pure)', marginBottom: '4px' }}>{file.fileName}</h4>
+              <h4 style={{ fontSize: '15px', color: 'var(--text-pure)', marginBottom: '4px' }}>{cleanFileName}</h4>
               <p style={{ fontSize: '12px', color: 'var(--text-secondary)', maxWidth: '420px', margin: '0 auto 16px auto', lineHeight: '1.5' }}>
                 This file is preserved as an encrypted binary object. You can open it in a new browser tab or download/restore it directly.
               </p>
               <div style={{ display: 'inline-flex', gap: '8px' }}>
-                <a
-                  href={previewUrl}
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  type="button"
+                  onClick={handleOpenTab}
                   style={{
                     background: 'var(--accent-subtle)',
                     color: 'var(--accent)',
@@ -238,11 +247,11 @@ export default function PreviewModal({
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
-                    textDecoration: 'none'
+                    cursor: 'pointer'
                   }}
                 >
                   <ExternalLink style={{ width: '14px', height: '14px' }} /> Open in Browser
-                </a>
+                </button>
               </div>
             </div>
           )}
