@@ -918,11 +918,6 @@ When a local file is hidden:
 - [ ] **Desktop Native Bundle (Tauri / Electron)**: Packaging the HUD as a lightweight desktop tray utility.
 
 ---
-
-## 📄 License
-
-This software is distributed under the terms of the **[MIT License](LICENSE)**.
-
 <div align="center">
   <sub>Architected with precision by the <b>CypherVault Security Team</b> • 2026</sub>
 </div>
