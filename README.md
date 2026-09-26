@@ -909,15 +909,6 @@ When a local file is hidden:
 
 ---
 
-## 🗺️ Future Engineering Roadmap
-
-- [ ] **Client-Side WebCrypto Pre-Encryption**: Zero-knowledge encryption in the browser before packet transmission.
-- [ ] **DoD 5220.22-M 7-Pass Shredding**: Multi-pass pseudorandom disk overwriting.
-- [ ] **FIDO2 / WebAuthn Hardware Keys**: Physical YubiKey hardware authentication.
-- [ ] **Distributed S3 / Cloudflare R2 Cold Storage Driver**: Secondary multi-cloud encrypted backup driver.
-- [ ] **Desktop Native Bundle (Tauri / Electron)**: Packaging the HUD as a lightweight desktop tray utility.
-
----
 <div align="center">
   <sub>Architected with precision by the <b>CypherVault Security Team</b> • 2026</sub>
 </div>
